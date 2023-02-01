@@ -1,14 +1,18 @@
 import { useState } from "react";
 import { TrashIcon } from "@heroicons/react/outline";
 import Button from "~/components/buttom";
-import { Form, useActionData, useLoaderData, useSubmit, useTransition } from "@remix-run/react";
-import { redirect, ActionFunction, LoaderFunction } from "@remix-run/router";
+import { Form, useActionData, useSubmit, useTransition } from "@remix-run/react";
+import { redirect, ActionFunction } from "@remix-run/router";
 import { CONFIG } from "~/config";
 import { API } from "~/services/api";
-import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { storage } from "~/utilities/firebase";
+import { checkSession } from "~/services/session";
 
 export const action: ActionFunction = async ({ request }: any) => {
+	const session: any = await checkSession(request);
+	if (!session) return redirect("/login");
+
 	const formData = await request.formData();
 	const defaultImage = "https://cdn.pixabay.com/image/2013/07/13/12/07/avatar-159236__340.png";
 	try {
@@ -75,7 +79,7 @@ export default function Index() {
 			<div className="flex items-center justify-center bg-white rounded-md shadow-md">
 				<div className="w-full  m-2 mx-5 sm:m-10   p-5 sm:p-10">
 					<h1 className="text-3xl font-semibold text-teal-500 text-center mb-10">
-						Registrasi Pengguna
+						Registrasi Pengguna Kendaraan
 					</h1>
 					<div className="grid gap-6 mb-6 md:grid-cols-2 ">
 						<div>
@@ -111,7 +115,7 @@ export default function Index() {
 								name="phone_number"
 								className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
 								placeholder="0812-2233-1222"
-								// pattern="[0-9]{3}-[0-9]{2}-[0-9]{3}"
+								pattern="[0-9]{3}-[0-9]{2}-[0-9]{3}"
 								required
 							/>
 						</div>
@@ -176,12 +180,15 @@ export default function Index() {
 							</div>
 						</div>
 					</div>
-					<Button
-						className="w-full my-5"
-						type="submit"
-						title={transition.state === "submitting" ? "Loading..." : "Submit"}
-					/>
-					{actionData && <small className="text-sm text-red-500">{actionData.message}</small>}
+					<div className="mt-5 flex justify-end">
+						<button
+							className="w-64 text-white bg-teal-500 hover:text-teal-200 focus:outline-none hover:bg-teal-500 focus:ring-4 focus:ring-teal-200 font-medium rounded-lg text-sm px-5 py-1.5"
+							type="submit"
+						>
+							{transition.state === "submitting" ? "Loading..." : "Create"}
+						</button>
+						{actionData && <small className="text-sm text-red-500">{actionData.message}</small>}
+					</div>
 				</div>
 			</div>
 		</Form>

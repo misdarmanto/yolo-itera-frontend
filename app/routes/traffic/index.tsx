@@ -1,12 +1,16 @@
 import { useLoaderData, useSubmit } from "@remix-run/react";
-import { LoaderFunction } from "@remix-run/router";
+import { LoaderFunction, redirect } from "@remix-run/router";
 import Table from "~/components/table";
 import Button from "~/components/buttom";
 import { useState } from "react";
 import { CONFIG } from "~/config";
 import { API } from "~/services/api";
+import { checkSession } from "~/services/session";
 
 export let loader: LoaderFunction = async ({ request }) => {
+	const session: any = await checkSession(request);
+	if (!session) return redirect("/login");
+
 	try {
 		const url = new URL(request.url);
 		const search = url.searchParams.get("search") || "";
@@ -54,7 +58,7 @@ export default function Index() {
 		<div>
 			<Table
 				search={loader.search}
-				onSearch={(e: any) => submit(e.currentTarget, { action: "/traffics" })}
+				onSearch={(e: any) => submit(e.currentTarget, { action: "/traffic" })}
 				header={loader.table.header}
 				body={loader.table.body}
 				showAddButton={false}

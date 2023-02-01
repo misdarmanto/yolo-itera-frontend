@@ -9,6 +9,7 @@ import { checkSession } from "~/services/session";
 export let loader: LoaderFunction = async ({ request }) => {
 	const session: any = await checkSession(request);
 	if (!session) return redirect("/login");
+
 	try {
 		const statistic = await API.get({
 			session: request,

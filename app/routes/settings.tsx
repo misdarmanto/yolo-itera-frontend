@@ -1,9 +1,12 @@
-// import { Link, LoaderFunction, Outlet, useLoaderData } from "remix";
 import { useLoaderData, Link, Outlet } from "@remix-run/react";
-import { LoaderFunction } from "@remix-run/node";
+import { LoaderFunction, redirect } from "@remix-run/node";
 import { BsFillCameraFill } from "react-icons/bs";
+import { checkSession } from "~/services/session";
 
-export let loader: LoaderFunction = async () => {
+export let loader: LoaderFunction = async ({ request }) => {
+	const session: any = await checkSession(request);
+	if (!session) return redirect("/login");
+
 	try {
 		return { isError: false };
 	} catch (error: any) {

@@ -1,10 +1,11 @@
 import { createCookieSessionStorage, redirect } from "@remix-run/node";
+import { CONFIG } from "~/config";
 import { CONSOLE } from "~/utilities/log";
 
 export let storage = createCookieSessionStorage({
 	cookie: {
 		name: "Itera Cookie",
-		secure: true,
+		secure: CONFIG.env === "production",
 		secrets: ["hello"],
 		sameSite: "lax",
 		path: "/",

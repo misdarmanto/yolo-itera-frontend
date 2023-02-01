@@ -3,8 +3,12 @@ import { Form, useActionData, useSubmit, useTransition } from "@remix-run/react"
 import { ActionFunction, redirect } from "@remix-run/router";
 import { CONFIG } from "~/config";
 import { API } from "~/services/api";
+import { checkSession } from "~/services/session";
 
 export const action: ActionFunction = async ({ request }) => {
+	const session: any = await checkSession(request);
+	if (!session) return redirect("/login");
+
 	const formData = await request.formData();
 	try {
 		if (request.method == "POST") {

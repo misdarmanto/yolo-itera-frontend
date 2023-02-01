@@ -7,8 +7,12 @@ import { API } from "~/services/api";
 import { CONFIG } from "~/config";
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { storage } from "~/utilities/firebase";
+import { checkSession } from "~/services/session";
 
 export let loader: LoaderFunction = async ({ params, request }) => {
+	const session: any = await checkSession(request);
+	if (!session) return redirect("/login");
+
 	try {
 		const vehicle = await API.get({
 			session: request,
@@ -37,6 +41,9 @@ export let loader: LoaderFunction = async ({ params, request }) => {
 };
 
 export const action = async ({ request }: any) => {
+	const session: any = await checkSession(request);
+	if (!session) return redirect("/login");
+
 	const formData = await request.formData();
 	try {
 		if (request.method == "POST") {
@@ -266,12 +273,15 @@ export default function Index() {
 						</div>
 					</div>
 
-					<Button
-						className="w-full my-5"
-						type="submit"
-						title={transition.state === "submitting" ? "Loading..." : "Submit"}
-					/>
-					{actionData && <small className="text-sm text-red-500">{actionData.message}</small>}
+					<div className="mt-5 flex justify-end">
+						<button
+							className="w-64 text-white bg-teal-500 hover:text-teal-200 focus:outline-none hover:bg-teal-500 focus:ring-4 focus:ring-teal-200 font-medium rounded-lg text-sm px-5 py-1.5"
+							type="submit"
+						>
+							{transition.state === "submitting" ? "Loading..." : "Update"}
+						</button>
+						{actionData && <small className="text-sm text-red-500">{actionData.message}</small>}
+					</div>
 				</div>
 			</div>
 			<input type="hidden" defaultValue={currentVehicle.id} name="id" />

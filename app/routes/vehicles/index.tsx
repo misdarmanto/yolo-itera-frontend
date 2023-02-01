@@ -1,12 +1,16 @@
 import { Form, Link, useActionData, useLoaderData, useSubmit } from "@remix-run/react";
-import { LoaderFunction, ActionFunction, json } from "@remix-run/router";
+import { LoaderFunction, ActionFunction, json, redirect } from "@remix-run/router";
 import { useState } from "react";
 import Button from "~/components/buttom";
 import Table from "~/components/table";
 import { API } from "~/services/api";
 import { CONFIG } from "~/config";
+import { checkSession } from "~/services/session";
 
 export let loader: LoaderFunction = async ({ request }) => {
+	const session: any = await checkSession(request);
+	if (!session) return redirect("/login");
+
 	try {
 		const url = new URL(request.url);
 		const search = url.searchParams.get("search") || "";
@@ -36,6 +40,9 @@ export let loader: LoaderFunction = async ({ request }) => {
 };
 
 export let action: ActionFunction = async ({ request }) => {
+	const session: any = await checkSession(request);
+	if (!session) return redirect("/login");
+
 	const formData = await request.formData();
 	try {
 		if (request.method == "DELETE") {

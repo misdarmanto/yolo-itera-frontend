@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Form, Link, useLoaderData, useSubmit } from "@remix-run/react";
-import { LoaderFunction, ActionFunction, json } from "@remix-run/router";
+import { LoaderFunction, ActionFunction, json, redirect } from "@remix-run/router";
 import Button from "~/components/buttom";
 import Table from "~/components/table";
 import { CONFIG } from "~/config";
@@ -8,8 +8,8 @@ import { API } from "~/services/api";
 import { checkSession } from "~/services/session";
 
 export let loader: LoaderFunction = async ({ request }) => {
-	// const session: any = await checkSession(request);
-	// if (!session) return redirect("/login");
+	const session: any = await checkSession(request);
+	if (!session) return redirect("/login");
 
 	try {
 		let url = new URL(request.url);
