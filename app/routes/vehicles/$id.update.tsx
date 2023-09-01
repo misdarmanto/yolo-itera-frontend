@@ -1,7 +1,13 @@
 import { useState } from "react";
 import { TrashIcon } from "@heroicons/react/outline";
 import Button from "~/components/buttom";
-import { Form, useActionData, useLoaderData, useSubmit, useTransition } from "@remix-run/react";
+import {
+	Form,
+	useActionData,
+	useLoaderData,
+	useSubmit,
+	useTransition,
+} from "@remix-run/react";
 import { redirect, ActionFunction, LoaderFunction } from "@remix-run/router";
 import { API } from "~/services/api";
 import { CONFIG } from "~/config";
@@ -54,15 +60,16 @@ export const action = async ({ request }: any) => {
 				photo:
 					formData.get("vehicle_image") ||
 					"https://pousses.fr/sites/default/files/2022-01/no-image.png",
-				stnk:
-					formData.get("stnk_image") ||
-					"https://pousses.fr/sites/default/files/2022-01/no-image.png",
 				plateNumber: formData.get("plate_number"),
 				color: formData.get("color"),
 				type: formData.getAll("vehicle_types")[0],
 			};
 
-			await API.patch({ session: "", url: `${CONFIG.base_url_api.default}/vehicles`, body: payload });
+			await API.patch({
+				session: "",
+				url: `${CONFIG.base_url_api.default}/vehicles`,
+				body: payload,
+			});
 			return redirect("/vehicles");
 		}
 	} catch (error: any) {
@@ -94,7 +101,6 @@ export default function Index() {
 	};
 
 	const [imgeVehicle, setImageVehicle] = useState<string>(loader.vehicle.photo);
-	const [stnkPhoto, setStnkPhoto] = useState<string>(loader.vehicle.stnk);
 	const [isOpenModal, setIsOpenModal] = useState(false);
 	const [userOwner, setUserOwner] = useState<any>();
 
@@ -110,17 +116,6 @@ export default function Index() {
 		try {
 			const imageUrl = await uploadImageToFirebase({ imageRef, file });
 			setImageVehicle(imageUrl);
-		} catch (error) {
-			console.log(error);
-		}
-	};
-
-	const handleUploadImageStnk = async (event: any) => {
-		const file = event.target.files[0];
-		const imageRef = ref(storage, "STNKImage/" + file.name);
-		try {
-			const imageUrl = await uploadImageToFirebase({ imageRef, file });
-			setStnkPhoto(imageUrl);
 		} catch (error) {
 			console.log(error);
 		}
@@ -214,10 +209,16 @@ export default function Index() {
 								name="vehicle_types"
 								className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
 							>
-								<option defaultValue="Motor" selected={currentVehicle.type === "Motor"}>
+								<option
+									defaultValue="Motor"
+									selected={currentVehicle.type === "Motor"}
+								>
 									Motor
 								</option>
-								<option defaultValue="Mobil" selected={currentVehicle.type === "Mobil"}>
+								<option
+									defaultValue="Mobil"
+									selected={currentVehicle.type === "Mobil"}
+								>
 									Mobil
 								</option>
 							</select>
@@ -228,7 +229,10 @@ export default function Index() {
 						<div className="w-full md:mr-2">
 							<label className="mt-2 block text-sm font-medium text-gray-700">
 								Foto kendaraan
-								<span className="text-xs text-purple-500"> Pastikan ukuran gambar 1:1</span>
+								<span className="text-xs text-purple-500">
+									{" "}
+									Pastikan ukuran gambar 1:1
+								</span>
 							</label>
 							<div className="mt-2">
 								<input
@@ -244,31 +248,15 @@ export default function Index() {
 										onClick={() => setImageVehicle("")}
 									/>
 								)}
-								<img src={imgeVehicle} className="h-30 image-cover flex-center"></img>
-								<input type="hidden" defaultValue={imgeVehicle} name="vehicle_image" />
-							</div>
-						</div>
-						<div className="w-full md:mr-2">
-							<label className="mt-2 block text-sm font-medium text-gray-700">
-								Foto STNK
-								<span className="text-xs text-purple-500"> Pastikan ukuran gambar 1:1</span>
-							</label>
-							<div className="mt-2">
+								<img
+									src={imgeVehicle}
+									className="h-30 image-cover flex-center"
+								></img>
 								<input
-									onChange={handleUploadImageStnk}
-									className={`block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm`}
-									type="file"
+									type="hidden"
+									defaultValue={imgeVehicle}
+									name="vehicle_image"
 								/>
-							</div>
-							<div className="mt-2 relative p-2 bg-white border-dashed border-2 border-gray-400 h-32 w-full rounded-lg image-cover flex flex-row justify-center">
-								{stnkPhoto && (
-									<TrashIcon
-										className="absolute p-1 bottom-0 right-0 text-xs h-8 w-8 text-red-500 rounded-full bg-white hover:bg-red-200"
-										onClick={() => setStnkPhoto("")}
-									/>
-								)}
-								<img src={stnkPhoto} className="h-30 image-cover flex-center"></img>
-								<input type="hidden" defaultValue={stnkPhoto} name="stnk_image" />
 							</div>
 						</div>
 					</div>
@@ -280,7 +268,11 @@ export default function Index() {
 						>
 							{transition.state === "submitting" ? "Loading..." : "Update"}
 						</button>
-						{actionData && <small className="text-sm text-red-500">{actionData.message}</small>}
+						{actionData && (
+							<small className="text-sm text-red-500">
+								{actionData.message}
+							</small>
+						)}
 					</div>
 				</div>
 			</div>
@@ -297,7 +289,13 @@ interface ModalTypes {
 	onUserSelected: any;
 }
 
-const Modal = ({ isOpenModal, setIsOpenModal, onSearch, onUserSelected, loader }: ModalTypes) => {
+const Modal = ({
+	isOpenModal,
+	setIsOpenModal,
+	onSearch,
+	onUserSelected,
+	loader,
+}: ModalTypes) => {
 	interface ListTypes {
 		name: string;
 		email: string;
@@ -306,14 +304,25 @@ const Modal = ({ isOpenModal, setIsOpenModal, onSearch, onUserSelected, loader }
 	}
 	const List = ({ photo, name, email, onClick }: ListTypes) => {
 		return (
-			<li onClick={onClick} className="pb-3 p-2 sm:pb-4 rounded-lg hover:bg-gray-100">
+			<li
+				onClick={onClick}
+				className="pb-3 p-2 sm:pb-4 rounded-lg hover:bg-gray-100"
+			>
 				<div className="flex items-center space-x-4">
 					<div className="flex-shrink-0">
-						<img className="w-8 h-8 rounded-full" src={photo} alt="Neil image" />
+						<img
+							className="w-8 h-8 rounded-full"
+							src={photo}
+							alt="Neil image"
+						/>
 					</div>
 					<div className="flex-1 min-w-0">
-						<p className="text-sm font-medium text-gray-900 truncate dark:text-white">{name}</p>
-						<p className="text-sm text-gray-500 truncate dark:text-gray-400">{email}</p>
+						<p className="text-sm font-medium text-gray-900 truncate dark:text-white">
+							{name}
+						</p>
+						<p className="text-sm text-gray-500 truncate dark:text-gray-400">
+							{email}
+						</p>
 					</div>
 				</div>
 			</li>
@@ -322,12 +331,12 @@ const Modal = ({ isOpenModal, setIsOpenModal, onSearch, onUserSelected, loader }
 	return (
 		<div className="fixed inset-0 z-10 overflow-y-auto">
 			<div
-				className="fixed inset-0 w-full h-full bg-black opacity-10"
+				className="fixed inset-0 h-full bg-black opacity-10"
 				onClick={() => setIsOpenModal(!isOpenModal)}
 			></div>
 			<div className="flex items-center min-h-screen px-4 py-8">
-				<div className="relative h-64 flex w-full max-w-xl p-8 mx-auto bg-white rounded-md shadow-lg">
-					<div className="w-full">
+				<div className="relative h-64 flex max-w-xl p-8 mx-auto bg-white rounded-md shadow-lg">
+					<div className="w-96 overflow-y-scroll">
 						<Form onChange={onSearch} method="get">
 							<div className="flex flex-row ">
 								<input

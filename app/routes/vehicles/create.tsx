@@ -1,7 +1,13 @@
 import { useState } from "react";
 import { TrashIcon, PlusCircleIcon } from "@heroicons/react/outline";
 import Button from "~/components/buttom";
-import { Form, useActionData, useLoaderData, useSubmit, useTransition } from "@remix-run/react";
+import {
+	Form,
+	useActionData,
+	useLoaderData,
+	useSubmit,
+	useTransition,
+} from "@remix-run/react";
 import { redirect, ActionFunction, LoaderFunction } from "@remix-run/router";
 import { API } from "~/services/api";
 import { CONFIG } from "~/config";
@@ -43,15 +49,16 @@ export const action = async ({ request }: any) => {
 				photo:
 					formData.get("vehicleImage") ||
 					"https://pousses.fr/sites/default/files/2022-01/no-image.png",
-				stnk:
-					formData.get("stnkImage") ||
-					"https://pousses.fr/sites/default/files/2022-01/no-image.png",
 				plateNumber: formData.get("plate_number"),
 				color: formData.get("color"),
 				type: formData.getAll("vehicle_types")[0],
 			};
 
-			await API.post({ session: "", url: `${CONFIG.base_url_api.default}/vehicles`, body: payload });
+			await API.post({
+				session: "",
+				url: `${CONFIG.base_url_api.default}/vehicles`,
+				body: payload,
+			});
 			return redirect("/vehicles");
 		}
 	} catch (err: any) {
@@ -81,7 +88,6 @@ export default function Index() {
 	};
 
 	const [imgeVehicle, setImageVehicle] = useState<string>();
-	const [stnkPhoto, setStnkPhoto] = useState<string>();
 	const [isOpenModal, setIsOpenModal] = useState(false);
 	const [userOwner, setUserOwner] = useState<any>();
 
@@ -97,17 +103,6 @@ export default function Index() {
 		try {
 			const imageUrl = await uploadImageToFirebase({ imageRef, file });
 			setImageVehicle(imageUrl);
-		} catch (error) {
-			console.log(error);
-		}
-	};
-
-	const handleUploadImageStnk = async (event: any) => {
-		const file = event.target.files[0];
-		const imageRef = ref(storage, "STNKImage/" + file.name);
-		try {
-			const imageUrl = await uploadImageToFirebase({ imageRef, file });
-			setStnkPhoto(imageUrl);
 		} catch (error) {
 			console.log(error);
 		}
@@ -134,7 +129,11 @@ export default function Index() {
 								placeholder="Jack"
 								required
 							/>
-							<input type="hidden" value={userOwner?.id || null} name="user_id" />
+							<input
+								type="hidden"
+								value={userOwner?.id || null}
+								name="user_id"
+							/>
 
 							{isOpenModal && (
 								<Modal
@@ -202,7 +201,10 @@ export default function Index() {
 						<div className="w-full md:mr-2">
 							<label className="mt-2 block text-sm font-medium text-gray-700">
 								Foto kendaraan
-								<span className="text-xs text-purple-500"> Pastikan ukuran gambar 1:1</span>
+								<span className="text-xs text-purple-500">
+									{" "}
+									Pastikan ukuran gambar 1:1
+								</span>
 							</label>
 							<div className="mt-2">
 								<input
@@ -218,31 +220,15 @@ export default function Index() {
 										onClick={() => setImageVehicle("")}
 									/>
 								)}
-								<img src={imgeVehicle} className="h-30 image-cover flex-center"></img>
-								<input type="hidden" defaultValue={imgeVehicle} name="vehicleImage" />
-							</div>
-						</div>
-						<div className="w-full md:mr-2">
-							<label className="mt-2 block text-sm font-medium text-gray-700">
-								Foto STNK
-								<span className="text-xs text-purple-500"> Pastikan ukuran gambar 1:1</span>
-							</label>
-							<div className="mt-2">
+								<img
+									src={imgeVehicle}
+									className="h-30 image-cover flex-center"
+								></img>
 								<input
-									onChange={handleUploadImageStnk}
-									className={`block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm`}
-									type="file"
+									type="hidden"
+									defaultValue={imgeVehicle}
+									name="vehicleImage"
 								/>
-							</div>
-							<div className="mt-2 relative p-2 bg-white border-dashed border-2 border-gray-400 h-32 w-full rounded-lg image-cover flex flex-row justify-center">
-								{stnkPhoto && (
-									<TrashIcon
-										className="absolute p-1 bottom-0 right-0 text-xs h-8 w-8 text-red-500 rounded-full bg-white hover:bg-red-200"
-										onClick={() => setStnkPhoto("")}
-									/>
-								)}
-								<img src={stnkPhoto} className="h-30 image-cover flex-center"></img>
-								<input type="hidden" defaultValue={stnkPhoto} name="stnkImage" />
 							</div>
 						</div>
 					</div>
@@ -254,7 +240,11 @@ export default function Index() {
 						>
 							{transition.state === "submitting" ? "Loading..." : "Create"}
 						</button>
-						{actionData && <small className="text-sm text-red-500">{actionData.message}</small>}
+						{actionData && (
+							<small className="text-sm text-red-500">
+								{actionData.message}
+							</small>
+						)}
 					</div>
 				</div>
 			</div>
@@ -270,18 +260,26 @@ interface ModalTypes {
 	onUserSelected: any;
 }
 
-const Modal = ({ isOpenModal, setIsOpenModal, submit, onUserSelected, loader }: ModalTypes) => {
+const Modal = ({
+	isOpenModal,
+	setIsOpenModal,
+	submit,
+	onUserSelected,
+	loader,
+}: ModalTypes) => {
 	return (
-		<div className="fixed inset-0 z-10 overflow-y-auto">
+		<div className="fixed inset-0 z-10">
 			<div
 				className="fixed inset-0 w-full h-full bg-black opacity-10"
 				onClick={() => setIsOpenModal(!isOpenModal)}
 			></div>
 			<div className="flex items-center min-h-screen px-4 py-8">
-				<div className="relative h-64 flex w-full max-w-xl p-8 mx-auto bg-white rounded-md shadow-lg">
-					<div className="w-full">
+				<div className="relative h-64 flex max-w-xl p-8 mx-auto bg-white rounded-md shadow-lg">
+					<div className="w-96 overflow-y-scroll">
 						<Form
-							onChange={(e: any) => submit(e.currentTarget, { action: "/vehicles/create" })}
+							onChange={(e: any) =>
+								submit(e.currentTarget, { action: "/vehicles/create" })
+							}
 							method="get"
 						>
 							<div className="flex flex-row ">
@@ -295,7 +293,7 @@ const Modal = ({ isOpenModal, setIsOpenModal, submit, onUserSelected, loader }: 
 								/>
 							</div>
 						</Form>
-						<ul className="overfllow-y-auto max-w-md  mx-5 divide-y divide-gray-200 mt-5 dark:divide-gray-700">
+						<ul className="max-w-md  mx-5 divide-y divide-gray-200 mt-5 dark:divide-gray-700">
 							{loader.users &&
 								loader.users?.items.map((user: any, index: number) => (
 									<li

@@ -18,7 +18,16 @@ export let loader: LoaderFunction = async ({ request }) => {
 			session: request,
 			url: `${CONFIG.base_url_api.default}/traffic/list?search=${search}`,
 		});
-		const header = ["Owner", "Name", "Type", "Plate", "RFID", "Color", "CheckIn", "CheckOut", "Action"];
+		const header = [
+			"Owner",
+			"Name",
+			"Type",
+			"Plate",
+			"Color",
+			"CheckIn",
+			"CheckOut",
+			"Action",
+		];
 
 		const body = vehicles.items.map((item: any) => {
 			return {
@@ -26,7 +35,6 @@ export let loader: LoaderFunction = async ({ request }) => {
 				name: item.vehicle.name,
 				type: item.vehicle.type,
 				plate: item.vehicle.plateNumber,
-				rfid: item.user.rfid,
 				color: item.vehicle.color,
 				checkIn: item.checkIn,
 				checkOut: item.checkOut,
@@ -66,7 +74,10 @@ export default function Index() {
 					console.log(item);
 					return (
 						<>
-							<Button title="More" onClick={() => setIsOpenModal(!isOpenModal)} />
+							<Button
+								title="More"
+								onClick={() => setIsOpenModal(!isOpenModal)}
+							/>
 
 							{isOpenModal && (
 								<div className="fixed inset-0 z-10 overflow-y-auto">

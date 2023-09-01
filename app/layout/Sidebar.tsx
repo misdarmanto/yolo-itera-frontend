@@ -13,15 +13,19 @@ const Sidebar = ({ session }: any) => {
 	const location = useLocation();
 
 	const Menus = [
-		{ title: "Statistic", path: "/", icon: <AiFillPieChart /> },
+		{ title: "DashBoard", path: "/", icon: <AiFillPieChart /> },
 		{ title: "Traffic", path: "/traffic", icon: <FiActivity /> },
-		{ title: "Users", path: "/users", icon: <FaUsers /> },
-		{ title: "Vehicles", path: "/vehicles", icon: <FaCarSide /> },
+		{ title: "Pengguna", path: "/users", icon: <FaUsers /> },
+		{ title: "Kendaraan", path: "/vehicles", icon: <FaCarSide /> },
 	];
 
 	if (session.role === "super admin") {
 		Menus.push({ title: "Admin", path: "/admin", icon: <MdVpnKey /> });
-		Menus.push({ title: "Settings", path: "/settings", icon: <AiTwotoneSetting /> });
+		Menus.push({
+			title: "Pengaturan",
+			path: "/settings",
+			icon: <AiTwotoneSetting />,
+		});
 	}
 	return (
 		<>
@@ -35,11 +39,17 @@ const Sidebar = ({ session }: any) => {
 				>
 					{open ? (
 						<>
-							<RiCloseLine className="text-3xl text-gray-500" onClick={() => setOpen(!open)} />
+							<RiCloseLine
+								className="text-3xl text-gray-500"
+								onClick={() => setOpen(!open)}
+							/>
 							<small>Close</small>
 						</>
 					) : (
-						<BiMenu onClick={() => setOpen(!open)} className="text-3xl text-gray-500" />
+						<BiMenu
+							onClick={() => setOpen(!open)}
+							className="text-3xl text-gray-500"
+						/>
 					)}
 				</li>
 

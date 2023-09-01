@@ -99,7 +99,7 @@ export default function Index() {
 										</h2>
 										<ul className="space-y-1 max-w-md list-disc list-inside text-gray-500 dark:text-gray-400">
 											<li>name: {item.name}</li>
-											<li>plate: {item.email}</li>
+											<li>e-mail: {item.email}</li>
 											<li>phone: {item.phone}</li>
 											<li>rfid: {item.rfid}</li>
 											<li>registered as: {item.more.registerAs}</li>
@@ -115,9 +115,11 @@ export default function Index() {
 										type="text"
 										name="color"
 										className="bg-gray-50 h-9 mx-2 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-teal-500 focus:border-teal-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-teal-500 dark:focus:border-teal-500"
-										placeholder="masukan nama kendaraan"
+										placeholder="masukan email"
 										value={userEmail}
-										onChange={(e: any) => setUserEmail(e.target.value)}
+										onChange={(e: any) =>
+											setUserEmail(e.target.value)
+										}
 										required
 									/>
 									<Form method="delete" onSubmit={handleDeleteVehicle}>

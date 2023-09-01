@@ -12,7 +12,7 @@ export let loader: LoaderFunction = async ({ request }) => {
 
 	try {
 		const admin = await API.get({
-			session: request,
+			session: session,
 			url: `${CONFIG.base_url_api.default}/admin/list`,
 		});
 
@@ -58,7 +58,11 @@ export default function Index() {
 					<li key={index} className="py-3 sm:py-4">
 						<div className="flex items-center space-x-4">
 							<div className="flex-shrink-0">
-								<img className="w-8 h-8 rounded-full" src={item.photo} alt="admin photo" />
+								<img
+									className="w-8 h-8 rounded-full"
+									src={item.photo}
+									alt="admin photo"
+								/>
 							</div>
 							<div className="flex-1 min-w-0">
 								<p className="text-sm font-medium text-gray-900 truncate dark:text-white">
@@ -145,7 +149,9 @@ export default function Index() {
 											<option value="admin" selected>
 												Admin
 											</option>
-											<option value="superAdmin">Super Admin</option>
+											<option value="superAdmin">
+												Super Admin
+											</option>
 										</select>
 									</div>
 								</div>

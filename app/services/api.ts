@@ -3,16 +3,28 @@ import { CONFIG } from "~/config";
 import { CONSOLE } from "~/utilities/log";
 
 export const getHeaders = (session: any) => {
+	console.log(session);
 	return {
-		"x-user-id": session?.user_id || "",
+		"x-user-id": session?.user_id || session?.adminId || "",
 	};
 };
 
 export const API = {
-	get: async ({ session, url, headers }: { session: any; url: string; headers?: any }) => {
+	get: async ({
+		session,
+		url,
+		headers,
+	}: {
+		session: any;
+		url: string;
+		headers?: any;
+	}) => {
 		try {
 			const result = await axios.get(url, {
-				auth: { username: CONFIG.authorization.username, password: CONFIG.authorization.passsword },
+				auth: {
+					username: CONFIG.authorization.username,
+					password: CONFIG.authorization.passsword,
+				},
 				headers: { ...getHeaders(session), ...headers },
 			});
 			return result.data.data;
@@ -40,7 +52,10 @@ export const API = {
 	}) => {
 		try {
 			const result = await axios.post(url, body, {
-				auth: { username: CONFIG.authorization.username, password: CONFIG.authorization.passsword },
+				auth: {
+					username: CONFIG.authorization.username,
+					password: CONFIG.authorization.passsword,
+				},
 				headers: { ...getHeaders(session), ...headers },
 			});
 			return result.data;
@@ -68,7 +83,10 @@ export const API = {
 	}) => {
 		try {
 			const result = await axios.patch(url, body, {
-				auth: { username: CONFIG.authorization.username, password: CONFIG.authorization.passsword },
+				auth: {
+					username: CONFIG.authorization.username,
+					password: CONFIG.authorization.passsword,
+				},
 				headers: { ...getHeaders(session), ...headers },
 			});
 			return result.data;
@@ -83,10 +101,21 @@ export const API = {
 		}
 	},
 
-	delete: async ({ session, url, headers }: { session: any; url: string; headers?: any }) => {
+	delete: async ({
+		session,
+		url,
+		headers,
+	}: {
+		session: any;
+		url: string;
+		headers?: any;
+	}) => {
 		try {
 			const result = await axios.delete(url, {
-				auth: { username: CONFIG.authorization.username, password: CONFIG.authorization.passsword },
+				auth: {
+					username: CONFIG.authorization.username,
+					password: CONFIG.authorization.passsword,
+				},
 				headers: { ...getHeaders(session), ...headers },
 			});
 			return result.data;
