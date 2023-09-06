@@ -10,8 +10,8 @@ export const action: ActionFunction = async ({ request }) => {
 	try {
 		if (request.method == "POST") {
 			const payload: any = {
-				email: formData.get("email"),
-				password: formData.get("password"),
+				adminEmail: formData.get("email"),
+				adminPassword: formData.get("password"),
 			};
 
 			const user = await API.post({
@@ -23,9 +23,9 @@ export const action: ActionFunction = async ({ request }) => {
 			return createSession({
 				adminId: user.data.adminId,
 				adminName: user.data.adminName,
-				role: user.data.role,
-				email: user.data.email,
-				photo: user.data.photo,
+				role: user.data.adminRole,
+				email: user.data.adminEmail,
+				photo: user.data.aminPhoto,
 				redirectTo: "/",
 			});
 		}
@@ -48,9 +48,13 @@ export default function Index() {
 		<Form method="post" onSubmit={handleSubmit}>
 			<div className="flex items-center justify-center bg-gray-50">
 				<div className="w-full sm:w-1/2 m-2 mx-5 sm:m-10 bg-white rounded-md shadow-md p-5 sm:p-10">
-					<h1 className="text-3xl font-semibold text-teal-500 text-center mb-10">Login</h1>
+					<h1 className="text-3xl font-semibold text-teal-500 text-center mb-10">
+						Login
+					</h1>
 					<div className="mb-6">
-						<label className="block mb-2 text-sm font-medium text-gray-900">Email</label>
+						<label className="block mb-2 text-sm font-medium text-gray-900">
+							Email
+						</label>
 						<input
 							type="email"
 							name="email"
@@ -60,7 +64,9 @@ export default function Index() {
 						/>
 					</div>
 					<div className="mb-6">
-						<label className="block mb-2 text-sm font-medium text-gray-900">Password</label>
+						<label className="block mb-2 text-sm font-medium text-gray-900">
+							Password
+						</label>
 						<input
 							type="password"
 							name="password"
@@ -73,9 +79,15 @@ export default function Index() {
 					<Button
 						className="w-full my-5"
 						type="submit"
-						title={transition.state === "submitting" ? "Loading..." : "Submit"}
+						title={
+							transition.state === "submitting" ? "Loading..." : "Submit"
+						}
 					/>
-					{actionData && <small className="text-sm text-red-500 mt-5">{actionData.message}</small>}
+					{actionData && (
+						<small className="text-sm text-red-500 mt-5">
+							{actionData.message}
+						</small>
+					)}
 				</div>
 			</div>
 		</Form>

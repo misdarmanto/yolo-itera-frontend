@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Form, Link, useLoaderData, useSubmit } from "@remix-run/react";
 import { LoaderFunction, ActionFunction, json, redirect } from "@remix-run/router";
 import Button from "~/components/buttom";
-import Table from "~/components/table";
+import Table from "~/components/table-junk";
 import { CONFIG } from "~/config";
 import { API } from "~/services/api";
 import { checkSession } from "~/services/session";

@@ -2,7 +2,7 @@ import { Form, Link, useActionData, useLoaderData, useSubmit } from "@remix-run/
 import { LoaderFunction, ActionFunction, json, redirect } from "@remix-run/router";
 import { useState } from "react";
 import Button from "~/components/buttom";
-import Table from "~/components/table";
+import Table from "~/components/table-junk";
 import { API } from "~/services/api";
 import { CONFIG } from "~/config";
 import { checkSession } from "~/services/session";
@@ -123,7 +123,9 @@ export default function Index() {
 										className="bg-gray-50 h-9 mx-2 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-teal-500 focus:border-teal-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-teal-500 dark:focus:border-teal-500"
 										placeholder="masukan nama kendaraan"
 										value={vehicleName}
-										onChange={(e: any) => setVehicleName(e.target.value)}
+										onChange={(e: any) =>
+											setVehicleName(e.target.value)
+										}
 										required
 									/>
 									<Form method="delete" onSubmit={handleDeleteVehicle}>

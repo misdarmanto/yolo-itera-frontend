@@ -1,6 +1,6 @@
 import { useLoaderData, useSubmit } from "@remix-run/react";
 import { LoaderFunction, redirect } from "@remix-run/router";
-import Table from "~/components/table";
+import Table from "~/components/table-junk";
 import Button from "~/components/buttom";
 import { useState } from "react";
 import { CONFIG } from "~/config";

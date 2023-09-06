@@ -1,13 +1,20 @@
 import { useState } from "react";
 import { TrashIcon } from "@heroicons/react/outline";
 import Button from "~/components/buttom";
-import { Form, useActionData, useLoaderData, useSubmit, useTransition } from "@remix-run/react";
+import {
+	Form,
+	useActionData,
+	useLoaderData,
+	useSubmit,
+	useTransition,
+} from "@remix-run/react";
 import { redirect, ActionFunction, LoaderFunction } from "@remix-run/router";
 import { CONFIG } from "~/config";
 import { API } from "~/services/api";
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { storage } from "~/utilities/firebase";
 import { checkSession } from "~/services/session";
+import { IUserModel } from "~/models/user";
 
 export let loader: LoaderFunction = async ({ params, request }) => {
 	const session: any = await checkSession(request);
@@ -28,19 +35,23 @@ export let loader: LoaderFunction = async ({ params, request }) => {
 
 export const action: ActionFunction = async ({ request }: any) => {
 	const formData = await request.formData();
-	const defaultImage = "https://cdn.pixabay.com/photo/2013/07/13/12/07/avatar-159236__340.png";
+	const defaultImage =
+		"https://cdn.pixabay.com/photo/2013/07/13/12/07/avatar-159236__340.png";
 	try {
 		if (request.method == "POST") {
-			const payload = {
-				id: formData.get("id"),
-				name: formData.get("name"),
-				email: formData.get("email"),
-				phone: formData.get("phone_number"),
-				photo: formData.get("user_image") || defaultImage,
-				photoIdentity: formData.get("image_identity") || defaultImage,
-				registerAs: formData.getAll("register_as")[0],
+			const payload: IUserModel = {
+				userId: formData.get("id"),
+				userName: formData.get("name"),
+				userEmail: formData.get("email"),
+				userPhoneNumber: formData.get("phone_number"),
+				userPhoto: formData.get("user_image") || defaultImage,
+				userRegisterAs: formData.getAll("register_as")[0],
 			};
-			await API.patch({ session: "", url: `${CONFIG.base_url_api.default}/users`, body: payload });
+			await API.patch({
+				session: "",
+				url: `${CONFIG.base_url_api.default}/users`,
+				body: payload,
+			});
 			return redirect("/users");
 		}
 	} catch (error: any) {
@@ -153,13 +164,22 @@ export default function Index() {
 								name="register_as"
 								className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
 							>
-								<option value="mahasiswa" selected={loader.registerAs === "mahasiswa"}>
+								<option
+									value="mahasiswa"
+									selected={loader.registerAs === "mahasiswa"}
+								>
 									Mahasiswa
 								</option>
-								<option value="pegawai" selected={loader.registerAs === "pegawai"}>
+								<option
+									value="pegawai"
+									selected={loader.registerAs === "pegawai"}
+								>
 									Pegawai
 								</option>
-								<option value="tamu" selected={loader.registerAs === "tamu"}>
+								<option
+									value="tamu"
+									selected={loader.registerAs === "tamu"}
+								>
 									Tamu
 								</option>
 							</select>
@@ -167,7 +187,10 @@ export default function Index() {
 						<div className="w-full md:mr-2">
 							<label className="mt-2 block text-sm font-medium text-gray-700">
 								Foto
-								<span className="text-xs text-purple-500"> Pastikan ukuran gambar 1:1</span>
+								<span className="text-xs text-purple-500">
+									{" "}
+									Pastikan ukuran gambar 1:1
+								</span>
 							</label>
 							<div className="mt-2">
 								<input
@@ -183,14 +206,24 @@ export default function Index() {
 										onClick={() => setUserImage("")}
 									/>
 								)}
-								<img src={userImage} className="h-30 image-cover flex-center"></img>
-								<input type="hidden" defaultValue={userImage} name="user_image" />
+								<img
+									src={userImage}
+									className="h-30 image-cover flex-center"
+								></img>
+								<input
+									type="hidden"
+									defaultValue={userImage}
+									name="user_image"
+								/>
 							</div>
 						</div>
 						<div className="w-full md:mr-2">
 							<label className="mt-2 block text-sm font-medium text-gray-700">
 								Foto KTP/SIM/KTM
-								<span className="text-xs text-purple-500"> Pastikan ukuran gambar 1:1</span>
+								<span className="text-xs text-purple-500">
+									{" "}
+									Pastikan ukuran gambar 1:1
+								</span>
 							</label>
 							<div className="mt-2">
 								<input
@@ -206,8 +239,15 @@ export default function Index() {
 										onClick={() => setImageIdentity("")}
 									/>
 								)}
-								<img src={imageIdentity} className="h-30 image-cover flex-center"></img>
-								<input type="hidden" defaultValue={imageIdentity} name="image_identity" />
+								<img
+									src={imageIdentity}
+									className="h-30 image-cover flex-center"
+								></img>
+								<input
+									type="hidden"
+									defaultValue={imageIdentity}
+									name="image_identity"
+								/>
 							</div>
 						</div>
 					</div>
@@ -218,7 +258,11 @@ export default function Index() {
 						>
 							{transition.state === "submitting" ? "Loading..." : "update"}
 						</button>
-						{actionData && <small className="text-sm text-red-500">{actionData.message}</small>}
+						{actionData && (
+							<small className="text-sm text-red-500">
+								{actionData.message}
+							</small>
+						)}
 					</div>
 				</div>
 			</div>

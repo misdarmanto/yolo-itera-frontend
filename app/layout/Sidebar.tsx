@@ -19,7 +19,7 @@ const Sidebar = ({ session }: any) => {
 		{ title: "Kendaraan", path: "/vehicles", icon: <FaCarSide /> },
 	];
 
-	if (session.role === "super admin") {
+	if (session.role === "superAdmin") {
 		Menus.push({ title: "Admin", path: "/admin", icon: <MdVpnKey /> });
 		Menus.push({
 			title: "Pengaturan",

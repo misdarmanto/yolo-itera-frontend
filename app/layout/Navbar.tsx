@@ -22,10 +22,14 @@ const Navbar = ({ session }: any) => {
 						onClick={() => setOpenDrawer(!openDrawer)}
 						className="text-3xl mx-2 sm:mr-5 text-gray-500 cursor-pointer hover:bg-gray-200 rounded-full"
 					/>
-					<UserPopUp name={session.adminName} email={session.email} photo={session.photo}>
+					<UserPopUp
+						name={session.adminName}
+						email={session.adminEmail}
+						photo={session.adminPhoto}
+					>
 						<img
 							className="p-1 w-10 h-10 mx-2 rounded-full ring-2 ring-teal-500 cursor-pointer dark:ring-gray-500"
-							src={session.photo}
+							src={session.adminPhoto || "http://photo.com/"}
 							alt="avatar"
 						/>
 					</UserPopUp>
@@ -56,9 +60,17 @@ function UserPopUp({ children, photo, email, name }: any) {
 				<Popover.Panel className="absolute right-0 z-20 mt-2 w-64 max-w-sm -translate-x-1/2 transform px-4 sm:px-0 lg:max-w-3xl">
 					<div className="w-full max-w-sm p-5 bg-white border border-gray-200 rounded-lg shadow-md dark:bg-gray-800 dark:border-gray-700">
 						<div className="flex flex-col items-center pb-10">
-							<img className="w-24 h-24 mb-3 rounded-full shadow-lg" src={photo} alt="Avatar" />
-							<h5 className="mb-1 text-xl font-medium text-gray-900 dark:text-white">{name}</h5>
-							<span className="text-sm text-gray-500 dark:text-gray-400">{email}</span>
+							<img
+								className="w-24 h-24 mb-3 rounded-full shadow-lg"
+								src={photo}
+								alt="Avatar"
+							/>
+							<h5 className="mb-1 text-xl font-medium text-gray-900 dark:text-white">
+								{name}
+							</h5>
+							<span className="text-sm text-gray-500 dark:text-gray-400">
+								{email}
+							</span>
 							<div className="flex mt-4 space-x-3 md:mt-6">
 								<Popover.Button>
 									<a

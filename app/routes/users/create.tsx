@@ -8,6 +8,7 @@ import { API } from "~/services/api";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { storage } from "~/utilities/firebase";
 import { checkSession } from "~/services/session";
+import { IUserModel } from "~/models/user";
 
 export const action: ActionFunction = async ({ request }: any) => {
 	const session: any = await checkSession(request);
@@ -18,14 +19,13 @@ export const action: ActionFunction = async ({ request }: any) => {
 		"https://cdn.pixabay.com/image/2013/07/13/12/07/avatar-159236__340.png";
 	try {
 		if (request.method == "POST") {
-			const payload = {
-				name: formData.get("name"),
-				rfid: formData.get("rfid"),
-				email: formData.get("email"),
-				phone: formData.get("phone_number"),
-				photo: formData.get("user_image") || defaultImage,
-				photoIdentity: formData.get("image_identity") || defaultImage,
-				registerAs: formData.getAll("register_as")[0],
+			const payload: IUserModel = {
+				userName: formData.get("name"),
+				userRfidCard: formData.get("rfid"),
+				userEmail: formData.get("email"),
+				userPhoneNumber: formData.get("phone_number"),
+				userPhoto: formData.get("user_image") || defaultImage,
+				userRegisterAs: formData.getAll("register_as")[0],
 			};
 			await API.post({
 				session: "",
@@ -50,7 +50,6 @@ export default function Index() {
 	};
 
 	const [userImage, setUserImage] = useState<string>();
-	const [imageIdentity, setImageIdentity] = useState<string>();
 
 	const uploadImageToFirebase = async ({ imageRef, file }: any) => {
 		const snapshot = await uploadBytesResumable(imageRef, file);
@@ -64,17 +63,6 @@ export default function Index() {
 		try {
 			const imageUrl = await uploadImageToFirebase({ imageRef, file });
 			setUserImage(imageUrl);
-		} catch (error) {
-			console.log(error);
-		}
-	};
-
-	const handleUploadIdentityImage = async (event: any) => {
-		const file = event.target.files[0];
-		const imageRef = ref(storage, "userImageIdentity/" + file.name);
-		try {
-			const imageUrl = await uploadImageToFirebase({ imageRef, file });
-			setImageIdentity(imageUrl);
 		} catch (error) {
 			console.log(error);
 		}
@@ -102,7 +90,7 @@ export default function Index() {
 						</div>
 						<div>
 							<label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-								rfid
+								nomor kartu rfid
 							</label>
 							<input
 								type="text"
@@ -125,7 +113,7 @@ export default function Index() {
 						</div>
 						<div>
 							<label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-								Nomor Telephon
+								Nomor Telepon/whatsApp
 							</label>
 							<input
 								type="tel"
@@ -154,7 +142,6 @@ export default function Index() {
 							<label className="mt-2 block text-sm font-medium text-gray-700">
 								Foto Diri
 								<span className="text-xs text-purple-500">
-									{" "}
 									Pastikan ukuran gambar 1:1
 								</span>
 							</label>
