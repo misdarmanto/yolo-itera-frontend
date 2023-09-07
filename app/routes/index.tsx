@@ -1,6 +1,16 @@
 import { useLoaderData } from "@remix-run/react";
 import { LoaderFunction, redirect } from "@remix-run/router";
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Cell } from "recharts";
+import {
+	AreaChart,
+	Area,
+	XAxis,
+	YAxis,
+	CartesianGrid,
+	Tooltip,
+	PieChart,
+	Pie,
+	Cell,
+} from "recharts";
 import { FaUsers, FaCarSide, FaMotorcycle } from "react-icons/fa";
 import { CONFIG } from "~/config";
 import { API } from "~/services/api";
@@ -13,7 +23,7 @@ export let loader: LoaderFunction = async ({ request }) => {
 	try {
 		const statistic = await API.get({
 			session: request,
-			url: `${CONFIG.base_url_api.default}/statistic`,
+			url: `${CONFIG.base_url_api}/statistic`,
 		});
 		return { statistic, session, isError: false };
 	} catch (error: any) {
@@ -40,13 +50,27 @@ export default function Index() {
 	const COLORS = ["#0088FE", "#00C49F"];
 
 	const RADIAN = Math.PI / 180;
-	const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index }: any) => {
+	const renderCustomizedLabel = ({
+		cx,
+		cy,
+		midAngle,
+		innerRadius,
+		outerRadius,
+		percent,
+		index,
+	}: any) => {
 		const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
 		const x = cx + radius * Math.cos(-midAngle * RADIAN);
 		const y = cy + radius * Math.sin(-midAngle * RADIAN);
 
 		return (
-			<text x={x} y={y} fill="white" textAnchor={x > cx ? "start" : "end"} dominantBaseline="central">
+			<text
+				x={x}
+				y={y}
+				fill="white"
+				textAnchor={x > cx ? "start" : "end"}
+				dominantBaseline="central"
+			>
 				{`${(percent * 100).toFixed(0)}%`}
 			</text>
 		);
@@ -91,8 +115,8 @@ export default function Index() {
 	];
 
 	return (
-		<div className="flex flex-wrap">
-			<div className="bg-white rounded-md shadow-md h-72 p-8 m-5">
+		<div className="flex flex-wrap gap-5">
+			<div className="bg-white rounded-md shadow-md h-72 p-8 ">
 				<h1 className="text-xl font-semibold ml-10">Jumlah Kendaraan</h1>
 
 				<div className="flex ">
@@ -108,7 +132,10 @@ export default function Index() {
 							dataKey="value"
 						>
 							{pieChartData.map((entry, index) => (
-								<Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+								<Cell
+									key={`cell-${index}`}
+									fill={COLORS[index % COLORS.length]}
+								/>
 							))}
 						</Pie>
 					</PieChart>
@@ -131,14 +158,20 @@ export default function Index() {
 				</div>
 			</div>
 
-			<div className="p-2 bg-white shadow-md rounded-md m-5 h-72">
+			<div className="p-2 bg-white shadow-md rounded-md h-72">
 				<div className="flex items-center text-gray-500 mb-5">
 					<div className="flex items-center">
-						<div style={{ backgroundColor: "#0088FE" }} className="h-5 w-5 mx-2 rounded-sm"></div>
+						<div
+							style={{ backgroundColor: "#0088FE" }}
+							className="h-5 w-5 mx-2 rounded-sm"
+						></div>
 						<h1>Motor</h1>
 					</div>
 					<div className="flex items-center">
-						<div style={{ backgroundColor: "#00C49F" }} className="h-5 w-5 mx-2 rounded-sm"></div>
+						<div
+							style={{ backgroundColor: "#00C49F" }}
+							className="h-5 w-5 mx-2 rounded-sm"
+						></div>
 						<h1>Mobil</h1>
 					</div>
 					<h1 className="text-xl font-semibold ml-10">Traffics</h1>
@@ -180,18 +213,24 @@ export default function Index() {
 				</AreaChart>
 			</div>
 
-			<div className="flex flex-col justify-between m-5">
+			<div className="flex flex-col justify-between gap-5">
 				<div className="flex items-center bg-white rounded-md shadow-md p-5 my-1 sm:w-96">
 					<FaUsers className="text-3xl mr-5 text-gray-500" />
-					<h1 className="text-md text-gray-500">{loader.statistic.users} Users Registered</h1>
+					<h1 className="text-md text-gray-500">
+						{loader.statistic.users} Pengguna Terdaftar
+					</h1>
 				</div>
 				<div className="flex items-center bg-white rounded-md shadow-md p-5 my-2 sm:w-96">
 					<FaCarSide className="text-3xl mr-5 text-gray-500" />
-					<h1 className="text-md text-gray-500">{loader.statistic.mobil} Cars Registered</h1>
+					<h1 className="text-md text-gray-500">
+						{loader.statistic.mobil} Mobil Terdaftar
+					</h1>
 				</div>
 				<div className="flex items-center bg-white rounded-md shadow-md p-5 my-2 sm:w-96">
 					<FaMotorcycle className="text-3xl mr-5 text-gray-500" />
-					<h1 className="text-md text-gray-500">{loader.statistic.motor} Motorcycles Registered</h1>
+					<h1 className="text-md text-gray-500">
+						{loader.statistic.motor} Motor Terdaftar
+					</h1>
 				</div>
 			</div>
 		</div>

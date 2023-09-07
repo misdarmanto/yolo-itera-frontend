@@ -1,40 +1,52 @@
 import { Form, Link, useActionData, useLoaderData, useSubmit } from "@remix-run/react";
 import { LoaderFunction, ActionFunction, json, redirect } from "@remix-run/router";
-import { useState } from "react";
+import { ReactElement, useEffect, useState } from "react";
 import Button from "~/components/buttom";
 import Table from "~/components/table-junk";
 import { API } from "~/services/api";
 import { CONFIG } from "~/config";
 import { checkSession } from "~/services/session";
+import { TableHeader, TableStyle } from "~/components/table /Table";
+import { IVehicleModel } from "~/models/vehicle";
+import { Breadcrumb } from "~/components/breadcrumb";
+import { Modal } from "~/components/Modal";
+import { CONSOLE } from "~/utilities/log";
 
 export let loader: LoaderFunction = async ({ request }) => {
 	const session: any = await checkSession(request);
 	if (!session) return redirect("/login");
 
-	try {
-		const url = new URL(request.url);
-		const search = url.searchParams.get("search") || "";
-		const vehicles = await API.get({
-			session: request,
-			url: `${CONFIG.base_url_api.default}/vehicles/list?search=${search}`,
-		});
-		const header = ["name", "type", "plate", "rfid", "color", "owner", "action"];
+	let url = new URL(request.url);
+	let search = url.searchParams.get("search") || "";
+	let size = url.searchParams.get("size") || 10;
+	let page = url.searchParams.get("page") || 0;
 
-		const body = vehicles.items.map((item: any) => {
-			return {
-				name: item.name,
-				type: item.type,
-				plate: item.plateNumber,
-				rfid: item.user.rfid,
-				color: item.color,
-				owner: item.user.name,
-				more: { ...item },
-			};
+	try {
+		const result = await API.getTableData({
+			session: session,
+			url: CONFIG.base_url_api + "/vehicles/list",
+			pagination: true,
+			page: +page || 0,
+			size: +size || 10,
+			filters: {
+				search: search || "",
+			},
 		});
-		const table = { header, body };
-		return { table, vehicles, isError: false };
+		return {
+			table: {
+				link: "vehicles",
+				data: result,
+				page: page,
+				size: size,
+				filter: {
+					search: search,
+				},
+			},
+			session: session,
+			isError: false,
+		};
 	} catch (error: any) {
-		console.error(error);
+		//CONSOLE.log(error);
 		return { ...error, isError: true };
 	}
 };
@@ -47,8 +59,10 @@ export let action: ActionFunction = async ({ request }) => {
 	try {
 		if (request.method == "DELETE") {
 			await API.delete({
-				session: request,
-				url: `${CONFIG.base_url_api.default}/vehicles?id=${formData.get("id")}`,
+				session: session,
+				url: `${CONFIG.base_url_api}/vehicles?vehicleId=${formData.get(
+					"vehicleId"
+				)}`,
 			});
 		}
 		return json({ status: "success", message: "berhasil dihapus" });
@@ -59,6 +73,7 @@ export let action: ActionFunction = async ({ request }) => {
 
 export default function Index() {
 	const loader = useLoaderData();
+	console.log(loader);
 	if (loader.isError) {
 		return (
 			<h1 className="text-center font-bold text-xl text-red-600">
@@ -70,93 +85,243 @@ export default function Index() {
 	const actionData = useActionData();
 	console.log(actionData);
 
+	const navigation = [{ title: "Daftar Kendaraan", href: "", active: true }];
+
 	const submit = useSubmit();
-	const [isOpenModal, setIsOpenModal] = useState(false);
+	const [mobileActionDropDown, setMobileActionDropdown] = useState<number | null>();
 
-	const handleDeleteVehicle = async (e: React.FormEvent<HTMLFormElement>) => {
-		submit(e.currentTarget, { method: "delete", action: `vehicles` });
-		setIsOpenModal(!isOpenModal);
-	};
+	useEffect(() => {
+		setMobileActionDropdown(null);
+	}, []);
 
-	const ActionTable = ({ item }: any) => {
-		const [vehicleName, setVehicleName] = useState<string>("");
-		return (
-			<>
-				<Button title="More" onClick={() => setIsOpenModal(!isOpenModal)} />
-
-				{isOpenModal && (
-					<div className="fixed inset-0 z-10 overflow-y-auto">
+	const header: TableHeader[] = [
+		{
+			title: "No",
+			data: (data: IVehicleModel, index: number): ReactElement => (
+				<td key={index + "-photo"} className="md:px-6 md:py-3 mb-4 md:mb-0">
+					{index + 1}
+				</td>
+			),
+		},
+		{
+			title: "Pemilik",
+			data: (data: IVehicleModel, index: number): ReactElement => (
+				<td key={index + "owner"} className="md:px-6 md:py-3 mb-4 md:mb-0">
+					{data.user?.userName}
+				</td>
+			),
+		},
+		{
+			title: "Nama Kendaraan",
+			data: (data: IVehicleModel, index: number): ReactElement => (
+				<td key={index + "-s"} className="md:px-6 md:py-3 mb-4 md:mb-0">
+					{data.vehicleName}
+				</td>
+			),
+		},
+		{
+			title: "Jenis Kendaraan",
+			data: (data: IVehicleModel, index: number): ReactElement => (
+				<td key={index + "-type"} className="md:px-6 md:py-3 mb-4 md:mb-0">
+					{data.vehicleType}
+				</td>
+			),
+		},
+		{
+			title: "warna",
+			data: (data: IVehicleModel, index: number): ReactElement => (
+				<td key={index + "-color"} className="md:px-6 md:py-3 mb-4 md:mb-0">
+					{data.vehicleColor}
+				</td>
+			),
+		},
+		{
+			title: "rfid kendaraan",
+			data: (data: IVehicleModel, index: number): ReactElement => (
+				<td key={index + "-rfid"} className="md:px-6 md:py-3 mb-4 md:mb-0">
+					{data.vehicleRfid}
+				</td>
+			),
+		},
+		{
+			title: "Aksi",
+			action: true,
+			data: (data: IVehicleModel, index: number): ReactElement => (
+				<td key={index + "action"} className="md:px-2 md:py-3">
+					{/* Desktop only  */}
+					<div className="hidden md:block w-64">
+						<button
+							onClick={() => {
+								setModalData(data);
+								setModalDelete(true);
+							}}
+							className="bg-transparent m-1 hover:bg-red-500 text-red-700 hover:text-white py-1 px-2 border border-red-500 hover:border-transparent rounded"
+						>
+							Hapus
+						</button>
+					</div>
+					{/* Mobile only  */}
+					<div className="block md:hidden relative">
+						<button
+							id={`dropdownButton-${index}`}
+							onClick={() => {
+								if (index == mobileActionDropDown) {
+									setMobileActionDropdown(null);
+								} else {
+									setMobileActionDropdown(index);
+								}
+							}}
+							data-dropdown-toggle={`dropdown-${index}`}
+							type="button"
+						>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								className="h-6 w-6"
+								fill="none"
+								viewBox="0 0 24 24"
+								stroke="currentColor"
+								strokeWidth="2"
+							>
+								<path
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"
+								/>
+							</svg>
+						</button>
 						<div
-							className="fixed inset-0 w-full h-full bg-black opacity-10"
-							onClick={() => setIsOpenModal(false)}
-						></div>
-						<div className="flex items-center min-h-screen px-4 py-8">
-							<div className="relative w-full max-w-xl p-8 mx-auto bg-white rounded-md shadow-lg">
-								<div className="flex ">
-									<img
-										className="w-64 h-48 rounded-sm"
-										src={item.more.photo}
-										alt="image vehecle"
-									/>
-
-									<div className="mx-5">
-										<h2 className="mb-2 text-lg font-semibold text-gray-900 dark:text-white">
-											Detail:
-										</h2>
-										<ul className="space-y-1 max-w-md list-disc list-inside text-gray-500 dark:text-gray-400">
-											<li>owner: {item.more.user.name}</li>
-											<li>name: {item.more.name}</li>
-											<li>type: {item.more.type}</li>
-											<li>plate: {item.more.plateNumber}</li>
-											<li>color: {item.more.color}</li>
-											<li>registered at: {item.more.createdOn}</li>
-										</ul>
-									</div>
-								</div>
-								<div className="mt-5 flex">
-									<Link to={`${item.more.id}/update`}>
-										<Button title="Update" className="mr-5" />
-									</Link>
-									<input
-										type="text"
-										name="color"
-										className="bg-gray-50 h-9 mx-2 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-teal-500 focus:border-teal-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-teal-500 dark:focus:border-teal-500"
-										placeholder="masukan nama kendaraan"
-										value={vehicleName}
-										onChange={(e: any) =>
-											setVehicleName(e.target.value)
-										}
-										required
-									/>
-									<Form method="delete" onSubmit={handleDeleteVehicle}>
-										<input
-											className="hidden"
-											name="id"
-											defaultValue={item.more.id}
-										></input>
-										<Button
-											title="Delete"
-											type="submit"
-											className="border-red-500 hover:bg-red-300 hover:text-white text-red-500"
-											disabled={vehicleName !== item.more.name}
-										/>
-									</Form>
-								</div>
-							</div>
+							id={`dropdown-${index}`}
+							className={`${
+								mobileActionDropDown == index
+									? "absolute right-0"
+									: "hidden"
+							} z-10 w-44 text-base list-none bg-white rounded divide-y divide-gray-100 shadow dark:bg-white`}
+						>
+							<ul
+								className="py-1"
+								aria-labelledby={`dropdownButton-${index}`}
+							>
+								<li>
+									<button
+										onClick={() => {
+											setModalData(data);
+											setModalDelete(true);
+										}}
+										className="block w-full text-left py-2 px-4 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-800 dark:hover:text-white"
+									>
+										Hapus
+									</button>
+								</li>
+							</ul>
 						</div>
 					</div>
-				)}
-			</>
-		);
+				</td>
+			),
+		},
+	];
+
+	const [modalDelete, setModalDelete] = useState(false);
+	const [modalData, setModalData] = useState<IVehicleModel>();
+	const submitDeleteData = async (e: React.FormEvent<HTMLFormElement>) => {
+		submit(e.currentTarget, { method: "delete", action: `/admin` });
+		setModalDelete(false);
 	};
 
 	return (
-		<Table
-			search={loader.search}
-			onSearch={(e: any) => submit(e.currentTarget, { action: "/vehicles" })}
-			actionComponent={(item: any) => <ActionTable item={item} />}
-			header={loader.table.header}
-			body={loader.table.body}
-		/>
+		<div className="bg-white rounded p-5">
+			<Breadcrumb title="Kendaraan" navigation={navigation} />
+			{actionData?.isError && (
+				<div
+					className="p-4 my-5 text-sm text-red-800 rounded-lg bg-red-50"
+					role="alert"
+				>
+					<span className="font-medium">Error</span> {actionData.message}
+				</div>
+			)}
+
+			<Form
+				onChange={(e: any) =>
+					submit(e.currentTarget, { action: `${loader?.table?.link}` })
+				}
+				method="get"
+			>
+				<div className="flex flex-col md:flex-row justify-between mb-2 md:px-0">
+					<div className="px-1 w-full mb-2 flex flex-row gap-2 justify-between md:justify-start">
+						<select
+							name="size"
+							defaultValue={loader?.table?.size}
+							className="block w-32 px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
+						>
+							<option value="2">2</option>
+							<option value="5">5</option>
+							<option value="10">10</option>
+							<option value="50">50</option>
+							<option value="100">100</option>
+						</select>
+						&nbsp;
+						<Link to={`create`}>
+							<button
+								type="button"
+								className="bg-transparent hover:bg-teal-300 text-teal-500 font-semibold hover:text-white py-2 px-4 border border-teal-500 hover:border-transparent rounded"
+							>
+								Tambah Data
+							</button>
+						</Link>
+						<button
+							type="button"
+							// onClick={download}
+							className="bg-transparent hover:bg-teal-300 text-teal-500 font-semibold hover:text-white py-2 px-4 border border-teal-500 hover:border-transparent rounded"
+						>
+							Export
+						</button>
+					</div>
+					<div className="w-full  md:w-1/5">
+						<input
+							defaultValue={loader?.table?.filter.search}
+							name="search"
+							className={`block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm`}
+							placeholder="Cari data"
+							type="text"
+						/>
+					</div>
+				</div>
+			</Form>
+
+			<TableStyle header={header} table={loader.table} />
+
+			<Modal
+				open={modalDelete}
+				setOpen={() => {
+					setModalDelete(false);
+				}}
+			>
+				<Form method="delete" onSubmit={submitDeleteData}>
+					<input
+						className="hidden"
+						name="vehicleId"
+						value={modalData?.vehicleId}
+					></input>
+					Apakah anda yakin akan menghapus{" "}
+					<strong>{modalData?.vehicleName}</strong>
+					<div className="flex flex-col md:flex-row mt-4">
+						<button
+							type="submit"
+							className="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-teal-600 text-base font-medium text-white hover:bg-teal-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 sm:text-sm"
+						>
+							Hapus
+						</button>
+						<button
+							type="button"
+							className="inline-flex ml-0 md:ml-2 justify-center w-full rounded-md border border-gray shadow-sm px-4 py-2 bg-white text-base font-medium text-gray hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray sm:text-sm"
+							onClick={() => {
+								setModalDelete(false);
+							}}
+						>
+							Batalkan
+						</button>
+					</div>
+				</Form>
+			</Modal>
+		</div>
 	);
 }

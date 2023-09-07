@@ -22,7 +22,7 @@ export let loader: LoaderFunction = async ({ params, request }) => {
 	try {
 		const vehicle = await API.get({
 			session: request,
-			url: `${CONFIG.base_url_api.default}/vehicles/?id=${params.id}`,
+			url: `${CONFIG.base_url_api}/vehicles/?id=${params.id}`,
 		});
 		const url = new URL(request.url);
 		const search = url.searchParams.get("search");
@@ -30,13 +30,13 @@ export let loader: LoaderFunction = async ({ params, request }) => {
 		if (search !== "" && search !== null) {
 			users = await API.get({
 				session: request,
-				url: `${CONFIG.base_url_api.default}/users/list?search=${search}`,
+				url: `${CONFIG.base_url_api}/users/list?search=${search}`,
 			});
 		}
 
 		const currentUser = await API.get({
 			session: request,
-			url: `${CONFIG.base_url_api.default}/users?id=${vehicle.userId}`,
+			url: `${CONFIG.base_url_api}/users?id=${vehicle.userId}`,
 		});
 
 		return { vehicle, currentUser, users, search, isError: false };
@@ -67,7 +67,7 @@ export const action = async ({ request }: any) => {
 
 			await API.patch({
 				session: "",
-				url: `${CONFIG.base_url_api.default}/vehicles`,
+				url: `${CONFIG.base_url_api}/vehicles`,
 				body: payload,
 			});
 			return redirect("/vehicles");

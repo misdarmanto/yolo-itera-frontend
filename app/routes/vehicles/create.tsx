@@ -14,6 +14,7 @@ import { CONFIG } from "~/config";
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { storage } from "~/utilities/firebase";
 import { checkSession } from "~/services/session";
+import { IVehicleModel } from "~/models/vehicle";
 
 export let loader: LoaderFunction = async ({ request }) => {
 	const session: any = await checkSession(request);
@@ -26,7 +27,7 @@ export let loader: LoaderFunction = async ({ request }) => {
 		if (search !== "" && search !== null) {
 			users = await API.get({
 				session: request,
-				url: `${CONFIG.base_url_api.default}/users/list?search=${search}`,
+				url: `${CONFIG.base_url_api}/users/list?search=${search}`,
 			});
 		}
 		return { users, search, isError: false };
@@ -43,20 +44,21 @@ export const action = async ({ request }: any) => {
 	const formData = await request.formData();
 	try {
 		if (request.method == "POST") {
-			const payload = {
-				userId: formData.get("user_id"),
-				name: formData.get("vehicle_name"),
-				photo:
+			const payload: IVehicleModel = {
+				vehicleUserId: formData.get("user_id"),
+				vehicleName: formData.get("vehicle_name"),
+				vehicleRfid: formData.get("vehicleRfid"),
+				vehiclePhoto:
 					formData.get("vehicleImage") ||
 					"https://pousses.fr/sites/default/files/2022-01/no-image.png",
-				plateNumber: formData.get("plate_number"),
-				color: formData.get("color"),
-				type: formData.getAll("vehicle_types")[0],
+				vehiclePlateNumber: formData.get("plate_number"),
+				vehicleColor: formData.get("color"),
+				vehicleType: formData.getAll("vehicle_types")[0],
 			};
 
 			await API.post({
 				session: "",
-				url: `${CONFIG.base_url_api.default}/vehicles`,
+				url: `${CONFIG.base_url_api}/vehicles`,
 				body: payload,
 			});
 			return redirect("/vehicles");
@@ -123,7 +125,7 @@ export default function Index() {
 							<input
 								onFocus={() => setIsOpenModal(true)}
 								type="text"
-								value={userOwner?.name || ""}
+								value={userOwner?.userName || ""}
 								name="owner_name"
 								className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-teal-500 focus:border-teal-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-teal-500 dark:focus:border-teal-500"
 								placeholder="Jack"
@@ -131,7 +133,7 @@ export default function Index() {
 							/>
 							<input
 								type="hidden"
-								value={userOwner?.id || null}
+								value={userOwner?.userId || null}
 								name="user_id"
 							/>
 
@@ -178,6 +180,18 @@ export default function Index() {
 								name="color"
 								className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-teal-500 focus:border-teal-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-teal-500 dark:focus:border-teal-500"
 								placeholder="ex: hitam"
+								required
+							/>
+						</div>
+						<div>
+							<label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+								RFID Kendaraan
+							</label>
+							<input
+								type="text"
+								name="vehicleRfid"
+								className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-teal-500 focus:border-teal-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-teal-500 dark:focus:border-teal-500"
+								placeholder="ex: 4234234234"
 								required
 							/>
 						</div>
@@ -238,7 +252,7 @@ export default function Index() {
 							className="w-64 text-white bg-teal-500 hover:text-teal-200 focus:outline-none hover:bg-teal-500 focus:ring-4 focus:ring-teal-200 font-medium rounded-lg text-sm px-5 py-1.5"
 							type="submit"
 						>
-							{transition.state === "submitting" ? "Loading..." : "Create"}
+							{transition.state === "submitting" ? "Loading..." : "Buat"}
 						</button>
 						{actionData && (
 							<small className="text-sm text-red-500">
@@ -308,16 +322,16 @@ const Modal = ({
 											<div className="flex-shrink-0">
 												<img
 													className="w-8 h-8 rounded-full"
-													src={user?.photo}
+													src={user?.userPhoto}
 													alt="Neil image"
 												/>
 											</div>
 											<div className="flex-1 min-w-0">
 												<p className="text-sm font-medium text-gray-900 truncate dark:text-white">
-													{user.name}
+													{user.UserName}
 												</p>
 												<p className="text-sm text-gray-500 truncate dark:text-gray-400">
-													{user.email}
+													{user.userEmail}
 												</p>
 											</div>
 										</div>

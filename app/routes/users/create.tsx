@@ -29,7 +29,7 @@ export const action: ActionFunction = async ({ request }: any) => {
 			};
 			await API.post({
 				session: "",
-				url: `${CONFIG.base_url_api.default}/users`,
+				url: `${CONFIG.base_url_api}/users`,
 				body: payload,
 			});
 			return redirect("/users");
@@ -90,7 +90,7 @@ export default function Index() {
 						</div>
 						<div>
 							<label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-								nomor kartu rfid
+								RFID kartu
 							</label>
 							<input
 								type="text"

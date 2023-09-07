@@ -16,15 +16,22 @@ export let loader: LoaderFunction = async ({ request }) => {
 		let search = url.searchParams.get("search") || "";
 		const data = await API.get({
 			session: request,
-			url: `${CONFIG.base_url_api.default}/users/list?search=${search}`,
+			url: `${CONFIG.base_url_api}/users/list?search=${search}`,
 		});
-		const header = ["nama", "email", "sebagai", "RFID", "Jumlah Kendaraan", "action"];
+		const header = [
+			"nama",
+			"email",
+			"sebagai",
+			"Nomor RFID Kartu",
+			"Jumlah Kendaraan",
+			"action",
+		];
 		const body = data.items.map((item: any) => {
 			return {
-				name: item.name,
-				email: item.email,
-				sebagai: item.registerAs,
-				rfid: item.rfid,
+				name: item.userName,
+				email: item.userEmail,
+				sebagai: item.userRegisterAs,
+				rfid: item.userRfidCard,
 				vheicleTotal: item.vehicles.length,
 				more: { ...item },
 			};
@@ -43,7 +50,7 @@ export let action: ActionFunction = async ({ request }) => {
 		if (request.method == "DELETE") {
 			await API.delete({
 				session: request,
-				url: `${CONFIG.base_url_api.default}/users?id=${formData.get("id")}`,
+				url: `${CONFIG.base_url_api}/users?id=${formData.get("id")}`,
 			});
 		}
 		return json({ status: "success", message: "berhasil dihapus" });
@@ -89,7 +96,7 @@ export default function Index() {
 								<div className="flex ">
 									<img
 										className="w-64 h-48 rounded-sm"
-										src={item.more.photo}
+										src={item.more.userPhoto}
 										alt="image vehecle"
 									/>
 
@@ -100,7 +107,7 @@ export default function Index() {
 										<ul className="space-y-1 max-w-md list-disc list-inside text-gray-500 dark:text-gray-400">
 											<li>name: {item.name}</li>
 											<li>e-mail: {item.email}</li>
-											<li>phone: {item.phone}</li>
+											<li>phone: {item.userPhone}</li>
 											<li>rfid: {item.rfid}</li>
 											<li>registered as: {item.more.registerAs}</li>
 											<li>registered at: {item.more.createdOn}</li>

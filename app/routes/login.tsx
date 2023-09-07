@@ -16,7 +16,7 @@ export const action: ActionFunction = async ({ request }) => {
 
 			const user = await API.post({
 				session: request,
-				url: `${CONFIG.base_url_api.default}/admin/login`,
+				url: `${CONFIG.base_url_api}/admin/login`,
 				body: payload,
 			});
 

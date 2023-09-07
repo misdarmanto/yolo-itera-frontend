@@ -23,7 +23,7 @@ export let loader: LoaderFunction = async ({ params, request }) => {
 	try {
 		const currentUser = await API.get({
 			session: request,
-			url: `${CONFIG.base_url_api.default}/users?id=${params.id}`,
+			url: `${CONFIG.base_url_api}/users?id=${params.id}`,
 		});
 
 		return { ...currentUser, isError: false };
@@ -49,7 +49,7 @@ export const action: ActionFunction = async ({ request }: any) => {
 			};
 			await API.patch({
 				session: "",
-				url: `${CONFIG.base_url_api.default}/users`,
+				url: `${CONFIG.base_url_api}/users`,
 				body: payload,
 			});
 			return redirect("/users");

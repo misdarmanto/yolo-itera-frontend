@@ -9,7 +9,7 @@ import { Link } from "@remix-run/react";
 const Navbar = ({ session }: any) => {
 	const [openDrawer, setOpenDrawer] = useState(false);
 	return (
-		<nav className="bg-white border-gray-200 mx-2 px-2 pr-10 py-2.5 rounded dark:bg-gray-800">
+		<nav className="bg-white border-gray-200 mx-5 px-2 pr-10 py-2.5 rounded dark:bg-gray-800">
 			<div className="container flex justify-between items-center mx-auto">
 				<div className="flex items-center mx-auto">
 					<span className="text-xl font-medium whitespace-nowrap dark:text-white text-gray-500">
@@ -25,11 +25,15 @@ const Navbar = ({ session }: any) => {
 					<UserPopUp
 						name={session.adminName}
 						email={session.adminEmail}
-						photo={session.adminPhoto}
+						photo={
+							"https://cdn.pixabay.com/image/2013/07/13/12/07/avatar-159236__340.png"
+						}
 					>
 						<img
 							className="p-1 w-10 h-10 mx-2 rounded-full ring-2 ring-teal-500 cursor-pointer dark:ring-gray-500"
-							src={session.adminPhoto || "http://photo.com/"}
+							src={
+								"https://cdn.pixabay.com/image/2013/07/13/12/07/avatar-159236__340.png"
+							}
 							alt="avatar"
 						/>
 					</UserPopUp>

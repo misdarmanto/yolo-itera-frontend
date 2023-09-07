@@ -11,7 +11,5 @@ export const CONFIG = {
 		secret: process.env.SESSION_SECRET || "itera-session-secret",
 		name: process.env.SESSION_NAME || "itera",
 	},
-	base_url_api: {
-		default: process.env.BASE_URL_API_DEFAULT || "http://localhost:8000", //"https://lucky-bedclothes-dove.cyclic.app/",
-	},
+	base_url_api: process.env.BASE_URL_API_DEFAULT || "http://localhost:8000", //"https://lucky-bedclothes-dove.cyclic.app/",
 };

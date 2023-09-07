@@ -44,8 +44,9 @@ export let loader: LoaderFunction = async ({ request }) => {
 export default function App() {
 	let location = useLocation();
 	const loader = useLoaderData();
-	console.log(loader);
-	if (!loader) return <h1 className="text-3xl text-red fomt-bold text-center">Error</h1>;
+
+	if (!loader)
+		return <h1 className="text-3xl text-red fomt-bold text-center">Error</h1>;
 
 	return (
 		<html lang="en">

@@ -13,7 +13,7 @@ export let loader: LoaderFunction = async ({ request }) => {
 	try {
 		const admin = await API.get({
 			session: session,
-			url: `${CONFIG.base_url_api.default}/admin/list`,
+			url: `${CONFIG.base_url_api}/admin/list`,
 		});
 
 		return { ...admin, isError: false };
