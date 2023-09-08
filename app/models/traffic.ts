@@ -4,6 +4,7 @@ export interface ITrafficModel {
 	trafficUserRfidCard: string;
 	trafficVehicleName: string;
 	trafficVehicleType: "mobil" | "motor";
+	trafficStatus: "checkIn" | "checkOut";
 	trafficVehicleColor: string;
 	trafficVehicleRfid: string;
 	trafficVehicleCheckIn: string;

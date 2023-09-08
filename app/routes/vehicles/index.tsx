@@ -6,7 +6,7 @@ import Table from "~/components/table-junk";
 import { API } from "~/services/api";
 import { CONFIG } from "~/config";
 import { checkSession } from "~/services/session";
-import { TableHeader, TableStyle } from "~/components/table /Table";
+import { TableHeader, TableStyle } from "~/components/Table";
 import { IVehicleModel } from "~/models/vehicle";
 import { Breadcrumb } from "~/components/breadcrumb";
 import { Modal } from "~/components/Modal";

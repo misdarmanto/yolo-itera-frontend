@@ -1,12 +1,10 @@
 import { Form, Link, useActionData, useLoaderData, useSubmit } from "@remix-run/react";
 import { LoaderFunction, ActionFunction, json, redirect } from "@remix-run/router";
 import { ReactElement, useEffect, useState } from "react";
-import Button from "~/components/buttom";
-import Table from "~/components/table-junk";
 import { API } from "~/services/api";
 import { CONFIG } from "~/config";
 import { checkSession } from "~/services/session";
-import { TableHeader, TableStyle } from "~/components/table /Table";
+import { TableHeader, TableStyle } from "~/components/Table";
 import { IVehicleModel } from "~/models/vehicle";
 import { Breadcrumb } from "~/components/breadcrumb";
 import { Modal } from "~/components/Modal";
@@ -21,6 +19,7 @@ export let loader: LoaderFunction = async ({ request }) => {
 	let search = url.searchParams.get("search") || "";
 	let size = url.searchParams.get("size") || 10;
 	let page = url.searchParams.get("page") || 0;
+	let range = url.searchParams.get("range") || "all";
 
 	try {
 		const result = await API.getTableData({
@@ -31,6 +30,7 @@ export let loader: LoaderFunction = async ({ request }) => {
 			size: +size || 10,
 			filters: {
 				search: search || "",
+				range: range,
 			},
 		});
 		return {
@@ -41,6 +41,7 @@ export let loader: LoaderFunction = async ({ request }) => {
 				size: size,
 				filter: {
 					search: search,
+					range: range,
 				},
 			},
 			session: session,
@@ -197,20 +198,56 @@ export default function Index() {
 			},
 		},
 		{
-			title: "Check In",
-			data: (data: ITrafficModel, index: number): ReactElement => (
-				<td key={index + "check in"} className="md:px-6 md:py-3 mb-4 md:mb-0">
-					{data.trafficVehicleCheckIn}
-				</td>
-			),
+			title: "Status",
+			data: (data: ITrafficModel, index: number): ReactElement => {
+				if (data.trafficStatus === "checkIn") {
+					return (
+						<td
+							key={index + "status"}
+							className="md:px-6 md:py-3 mb-4 md:mb-0"
+						>
+							<span className="bg-teal-100 text-teal-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded">
+								Masuk
+							</span>
+						</td>
+					);
+				} else {
+					return (
+						<td
+							key={index + "status"}
+							className="md:px-6 md:py-3 mb-4 md:mb-0"
+						>
+							<span className="bg-blue-100 text-blue-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded">
+								Keluar
+							</span>
+						</td>
+					);
+				}
+			},
 		},
 		{
-			title: "Check Out",
-			data: (data: ITrafficModel, index: number): ReactElement => (
-				<td key={index + "check out"} className="md:px-6 md:py-3 mb-4 md:mb-0">
-					{data.trafficVehicleCheckOut || "menunggu"}
-				</td>
-			),
+			title: "Waktu",
+			data: (data: ITrafficModel, index: number): ReactElement => {
+				if (data.trafficStatus === "checkIn") {
+					return (
+						<td
+							key={index + "status"}
+							className="md:px-6 md:py-3 mb-4 md:mb-0"
+						>
+							{data.trafficVehicleCheckIn}
+						</td>
+					);
+				} else {
+					return (
+						<td
+							key={index + "status"}
+							className="md:px-6 md:py-3 mb-4 md:mb-0"
+						>
+							{data.trafficVehicleCheckOut}
+						</td>
+					);
+				}
+			},
 		},
 
 		{
@@ -304,6 +341,19 @@ export default function Index() {
 							<option value="10">10</option>
 							<option value="50">50</option>
 							<option value="100">100</option>
+						</select>
+
+						<select
+							name="range"
+							defaultValue={loader?.table?.filter.range}
+							className="block w-32 px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
+						>
+							<option value="all">Semua</option>
+							<option value="today">Hari ini</option>
+							<option value="yesterday">Kemarin</option>
+							<option value="week">Minggu ini</option>
+							<option value="month">Bulan ini</option>
+							<option value="year">Tahun ini</option>
 						</select>
 
 						<button

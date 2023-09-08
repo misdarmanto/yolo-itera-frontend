@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { objectToQueryString } from "../../utilities/index";
+import { objectToQueryString } from "../utilities/index";
 
 export interface TableDataAttributes {
 	items: any[];
